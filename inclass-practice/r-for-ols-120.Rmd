@@ -56,7 +56,7 @@ data("Journals")
 ```{r ch2-summary, results='hide'}
 # mutate
 mutate(Journals,citeprice=price/citations) -> journals
-# pipe expresion
+# pipe expression
 Journals %>%
   mutate(
     citeprice=price/citations
@@ -70,12 +70,28 @@ summary(journals)
 > 期刊的價格(citeprice，平均文獻引用價格)如何影響其圖書館訂閱量(subs)? 
 
 ```{r ols-paircorr-r, echo=TRUE}
-
+library(psych)
+#select:從資料中選取東西
+select(journals,citeprice,subs) ->tempDF
+pairs.panels(tempDF)#生成tempDF的圖表
+#pipe expression
+journals %>% 
+  select(citeprice,subs) %>%
+  pairs.panels()
+#?dplyr::想要查詢東西時
+?dplyr::select
+#左上圖片可直接對照至左下
+#四分位圖是個不錯的東西（資料視覺化！）
 ```
 
 
 ```{r ols-paircorr2-r}
-
+#pipe expression
+journals %>% 
+  select(citeprice,subs) %>%
+  mutate_all(log) %>%
+  pairs.panels()
+#右偏的取log可以一到比較中間
 ```
 
 > 為什麼取log後，兩者的相關度變高？它表示兩個變數變得更不獨立嗎？
