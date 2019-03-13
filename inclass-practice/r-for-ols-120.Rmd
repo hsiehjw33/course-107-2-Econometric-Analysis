@@ -91,10 +91,12 @@ journals %>%
   select(citeprice,subs) %>%
   mutate_all(log) %>%
   pairs.panels()
+#mutate_all(log):mutate+將所有變數都取log
 #右偏的取log可以一到比較中間
 ```
 
 > 為什麼取log後，兩者的相關度變高？它表示兩個變數變得更不獨立嗎？
+X，相關度衡量線性關聯度有多強與獨立無關
 
 # 效應評估
 
