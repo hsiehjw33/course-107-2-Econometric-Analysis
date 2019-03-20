@@ -110,7 +110,15 @@ X，相關度衡量線性關聯度有多強與獨立無關
 數值變數v.s.數值變數
 
 ```{r ols-paircoor3-r, results='hide'}
+# 判斷變數是否為數值類別
+is_numeric<-function(x) all(is.numeric(x))
+# 計算數數與citeprice的相關係數
+cor_citeprice<-function(x) cor(x,journals$citeprice)
 
+journals %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_citeprice) %>%
+  kable()
 
 ```
 
@@ -119,14 +127,88 @@ X，相關度衡量線性關聯度有多強與獨立無關
 > 承上題，單純比較「期刊引用單價」高低間的「訂閱數量」差別，所估算出來的價格效果以絕對值來看會高估、還是低估？為什麼？
 
 # 複迴歸模型
+```{r}
+a<-NA
+#NA(Not Avalible)不確定為何
+a=="NA"
+```
 
 ```{r}
+#traditional
+lm(log(subs)~log(citeprice),data=journals)
+#pipe
+journals %>% 
+  lm(log(subs)~log(citeprice),data=.) -> model1
 
-
+#pipe
+journals %>%
+  lm(log(subs)~log(citeprice)+foundingyear,data=.) -> model2
 ```
+
+```{r}
+summary(model1)#簡介
+```
+
+# broom
+和summary的功能一樣，
+tidy()
+
+augment()
+
+glance()
+
+```{r}
+library(broom)
+#可進行mutate,select...
+```
+
+```{r}
+tidy(model1)
+#估計值
+```
+
+```{r}
+augment(model1)
+#樣本點的配試值殘差值
+```
+
+```{r}
+glance(model1)
+```
+
 
 ## 模型比較
 
 ```{r ols-comp-r, results='hide', warning=FALSE}
+journals %>% 
+  lm(log(subs)~log(citeprice),data=.) -> model_1
+journals %>%
+  lm(log(subs)~log(citeprice)+foundingyear,data=.) -> model_2
 
+library(sandwich)#asymptotic variance會呈現三明治的形狀～
+library(lmtest)
+library(stargazer)
+
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+#HC = Heteroscedasticity Cross-section
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="html",
+          align=TRUE)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
