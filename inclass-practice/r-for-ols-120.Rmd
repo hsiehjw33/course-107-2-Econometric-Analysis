@@ -14,7 +14,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=F)
+knitr::opts_chunk$set(echo = TRUE, eval=T)
 ```
 
 # 參考資料
@@ -193,15 +193,25 @@ library(stargazer)
 coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
 coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
 #HC = Heteroscedasticity Cross-section
+#這裡物件為矩陣
+```
 
+
+standard error:原始作法，使用矩陣
+```{r, results='asis'}
 stargazer(model_1, model_2, 
-          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          se=list(model_1_coeftest[,"Std. Error"],
+                  model_2_coeftest[,2]),
           type="html",
           align=TRUE)
 ```
 
+standard error:tidy1
+```{r}
+tidy(model_1_coeftest)->model1coeftest
+tidy(model_2_coeftest)->model2coeftest
 
-
+```
 
 
 
